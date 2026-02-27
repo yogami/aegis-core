@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  aegis-tee:
+    image: aegis-core:latest
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_ENV=production
+      # - PORT=8000
+      # Phala dstack specific configurations would go into the deploy manifest,
+      # but standard docker-compose is used locally or by the dstack CLI builder
+      # to synthesize the CVM footprint.
