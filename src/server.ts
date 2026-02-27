@@ -32,6 +32,32 @@ fastify.post('/enforce', async (request, reply) => {
     }
 });
 
+// The Healthtech (Path B) endpoint for HIPAA Agent constraints
+fastify.post('/healthtech/enforce', async (request, reply) => {
+    try {
+        const payloadString = JSON.stringify(request.body);
+
+        // In a real TEE, this would also be sent to the compiled JS worker string
+        // For the Node.js Fastify wrapper MVP, we route it to a new entrypoint
+        const { handleHealthtechRequest } = require('./phala-entry');
+        const resultString = await handleHealthtechRequest(payloadString);
+        const result = JSON.parse(resultString);
+
+        if (result.status === "denied") {
+            reply.status(403).send(result);
+        } else {
+            reply.send(result);
+        }
+    } catch (e: any) {
+        fastify.log.error(e);
+        reply.status(500).send({
+            status: "error",
+            message: "Healthtech Enclave processing failed",
+            error: e.message
+        });
+    }
+});
+
 const start = async () => {
     try {
         // Must listen on 0.0.0.0 for Docker/dstack networking
