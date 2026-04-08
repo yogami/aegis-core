@@ -81,6 +81,6 @@ test.describe('Aegis Healthtech API E2E', () => {
             data: 'this is not valid json'
         });
 
-        expect(response.status()).toBe(400); // Fastify returns 400 Bad Request for bad JSON
+        expect(response.status()).toBe(403); // The TEE catches the error and enforces a 403 Terminal Refusal
     });
 });

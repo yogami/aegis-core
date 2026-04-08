@@ -1,0 +1,983 @@
+{
+  "config": {
+    "configFile": "/Users/user1000/gitprojects/aegis-core/playwright.config.ts",
+    "rootDir": "/Users/user1000/gitprojects/aegis-core/e2e",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 2
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/user1000/gitprojects/aegis-core/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/Users/user1000/gitprojects/aegis-core/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/e2e-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "runAgents": "none",
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.58.2",
+    "workers": 5,
+    "webServer": {
+      "command": "npx tsx src/server.ts",
+      "port": 8000,
+      "timeout": 15000,
+      "reuseExistingServer": true
+    }
+  },
+  "suites": [
+    {
+      "title": "healthtech.spec.ts",
+      "file": "healthtech.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Aegis Healthtech API E2E",
+          "file": "healthtech.spec.ts",
+          "line": 6,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should allow a SCHEDULER to READ_SCHEDULE and return an Evidence Pack",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 60,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-08T17:31:17.357Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f5cce808adf0f6633290-aeea49818b9a5fd845cc",
+              "file": "healthtech.spec.ts",
+              "line": 8,
+              "column": 9
+            },
+            {
+              "title": "should return 403 Forbidden for unauthorized RBAC access",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 9,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-08T17:31:17.428Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f5cce808adf0f6633290-28228d5ed88501990085",
+              "file": "healthtech.spec.ts",
+              "line": 32,
+              "column": 9
+            },
+            {
+              "title": "should return 403 Forbidden if payload contains SSN (PHI Exfiltration Attempt)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 11,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-08T17:31:17.443Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f5cce808adf0f6633290-a12f5159a09d4949fe8c",
+              "file": "healthtech.spec.ts",
+              "line": 52,
+              "column": 9
+            },
+            {
+              "title": "should return 500 Error for malformed non-JSON requests",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 13,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-08T17:31:17.458Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f5cce808adf0f6633290-69bd825d337a6724e249",
+              "file": "healthtech.spec.ts",
+              "line": 75,
+              "column": 9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "solana-integration.spec.ts",
+      "file": "solana-integration.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Infrastructure Endpoints",
+          "file": "solana-integration.spec.ts",
+          "line": 25,
+          "column": 6,
+          "specs": [
+            {
+              "title": "GET /health returns alive with Solana features",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 56,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-08T17:31:17.363Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cca4a3c8928b258fa463-5b16d585954224b12116",
+              "file": "solana-integration.spec.ts",
+              "line": 27,
+              "column": 9
+            },
+            {
+              "title": "GET /api/docs returns full endpoint reference",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 7,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-08T17:31:17.429Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cca4a3c8928b258fa463-02d93d1b0cc99e04494d",
+              "file": "solana-integration.spec.ts",
+              "line": 41,
+              "column": 9
+            }
+          ]
+        },
+        {
+          "title": "Core Policy Enforcement",
+          "file": "solana-integration.spec.ts",
+          "line": 76,
+          "column": 6,
+          "specs": [
+            {
+              "title": "POST /enforce approves low-risk financial action",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 15,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-08T17:31:17.441Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cca4a3c8928b258fa463-d02707eb6002540ba62e",
+              "file": "solana-integration.spec.ts",
+              "line": 78,
+              "column": 9
+            },
+            {
+              "title": "POST /enforce denies high anomaly score action",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 7,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-08T17:31:17.461Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cca4a3c8928b258fa463-11dbb1d013886ec493c1",
+              "file": "solana-integration.spec.ts",
+              "line": 113,
+              "column": 9
+            },
+            {
+              "title": "POST /enforce denies tier-exceeding financial ops",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 7,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-08T17:31:17.476Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cca4a3c8928b258fa463-3d51ca14da1a1501250d",
+              "file": "solana-integration.spec.ts",
+              "line": 143,
+              "column": 9
+            }
+          ]
+        },
+        {
+          "title": "Solana Receipt Anchoring",
+          "file": "solana-integration.spec.ts",
+          "line": 178,
+          "column": 6,
+          "specs": [
+            {
+              "title": "POST /anchor-receipt rejects missing fields",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 4,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-08T17:31:17.490Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cca4a3c8928b258fa463-40349d0b9360c8d74f1a",
+              "file": "solana-integration.spec.ts",
+              "line": 180,
+              "column": 9
+            },
+            {
+              "title": "POST /anchor-receipt accepts valid receipt structure",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 66,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-08T17:31:17.498Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cca4a3c8928b258fa463-ad918d556ebb141da1c8",
+              "file": "solana-integration.spec.ts",
+              "line": 190,
+              "column": 9
+            },
+            {
+              "title": "GET /verify/:txSig handles non-existent transaction",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 5,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-08T17:31:17.568Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cca4a3c8928b258fa463-72ddc3ddbfc629905409",
+              "file": "solana-integration.spec.ts",
+              "line": 220,
+              "column": 9
+            }
+          ]
+        },
+        {
+          "title": "Solana Transaction Firewall",
+          "file": "solana-integration.spec.ts",
+          "line": 234,
+          "column": 6,
+          "specs": [
+            {
+              "title": "POST /solana/enforce-tx rejects missing fields",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 3,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-08T17:31:17.577Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cca4a3c8928b258fa463-e6d6c968ebe7ba15a589",
+              "file": "solana-integration.spec.ts",
+              "line": 236,
+              "column": 9
+            },
+            {
+              "title": "POST /solana/enforce-tx blocks unparseable transaction",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 4,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-08T17:31:17.585Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cca4a3c8928b258fa463-255dcee86a4c751615d7",
+              "file": "solana-integration.spec.ts",
+              "line": 246,
+              "column": 9
+            }
+          ]
+        },
+        {
+          "title": "Squads V4 Governance",
+          "file": "solana-integration.spec.ts",
+          "line": 269,
+          "column": 6,
+          "specs": [
+            {
+              "title": "GET /governance/config returns tier limits and EU AI Act mapping",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 3,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-08T17:31:17.592Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cca4a3c8928b258fa463-d72ceb8e1165258903ca",
+              "file": "solana-integration.spec.ts",
+              "line": 271,
+              "column": 9
+            },
+            {
+              "title": "POST /governance/evaluate returns AUTONOMOUS for low risk",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 3,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-08T17:31:17.603Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cca4a3c8928b258fa463-6d79bb752742cd7dee44",
+              "file": "solana-integration.spec.ts",
+              "line": 284,
+              "column": 9
+            },
+            {
+              "title": "POST /governance/evaluate returns REQUIRE_HUMAN for moderate risk",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 5,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-08T17:31:17.609Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cca4a3c8928b258fa463-9e0af1ccaa20ea749030",
+              "file": "solana-integration.spec.ts",
+              "line": 306,
+              "column": 9
+            },
+            {
+              "title": "POST /governance/evaluate returns BLOCKED for high risk",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 7,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-08T17:31:17.618Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cca4a3c8928b258fa463-ea0dbd991fd8cb44ddad",
+              "file": "solana-integration.spec.ts",
+              "line": 330,
+              "column": 9
+            },
+            {
+              "title": "POST /governance/evaluate rejects invalid tier",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 2,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-08T17:31:17.628Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cca4a3c8928b258fa463-13a1077a665b10294ab3",
+              "file": "solana-integration.spec.ts",
+              "line": 351,
+              "column": 9
+            },
+            {
+              "title": "POST /governance/evaluate triggers REQUIRE_HUMAN for over-limit T2 spend",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 2,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-08T17:31:17.634Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cca4a3c8928b258fa463-ab74494475183f549100",
+              "file": "solana-integration.spec.ts",
+              "line": 365,
+              "column": 9
+            }
+          ]
+        },
+        {
+          "title": "TEE Attestation",
+          "file": "solana-integration.spec.ts",
+          "line": 389,
+          "column": 6,
+          "specs": [
+            {
+              "title": "GET /attestation/status returns TEE info",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 3,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-08T17:31:17.639Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cca4a3c8928b258fa463-d77ff3721b91e4d45619",
+              "file": "solana-integration.spec.ts",
+              "line": 391,
+              "column": 9
+            }
+          ]
+        },
+        {
+          "title": "x402 Monetization",
+          "file": "solana-integration.spec.ts",
+          "line": 415,
+          "column": 6,
+          "specs": [
+            {
+              "title": "GET /monetization/status returns x402 config",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 3,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-08T17:31:17.645Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cca4a3c8928b258fa463-0021edd96d762906c5b8",
+              "file": "solana-integration.spec.ts",
+              "line": 417,
+              "column": 9
+            }
+          ]
+        },
+        {
+          "title": "Healthtech HIPAA Enforcement",
+          "file": "solana-integration.spec.ts",
+          "line": 435,
+          "column": 6,
+          "specs": [
+            {
+              "title": "POST /healthtech/enforce allows authorized SCHEDULER",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 9,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-08T17:31:17.652Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cca4a3c8928b258fa463-c76c892243d876818a12",
+              "file": "solana-integration.spec.ts",
+              "line": 437,
+              "column": 9
+            },
+            {
+              "title": "POST /healthtech/enforce blocks SSN exfiltration",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 5,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-08T17:31:17.670Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cca4a3c8928b258fa463-3c78f586185841d10528",
+              "file": "solana-integration.spec.ts",
+              "line": 454,
+              "column": 9
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-04-08T17:31:14.827Z",
+    "duration": 2873.7470000000003,
+    "expected": 24,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

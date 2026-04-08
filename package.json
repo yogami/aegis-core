@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "vitest run",
+    "test:e2e": "npx playwright test --config playwright.config.ts",
+    "test:e2e:prod": "TEST_API_URL=$TEST_API_URL npx playwright test --config playwright.config.ts",
     "start": "tsx src/server.ts"
   },
   "keywords": [],
@@ -12,6 +14,7 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@types/node": "^25.3.2",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
@@ -21,7 +24,11 @@
   "dependencies": {
     "@noble/ed25519": "^3.0.0",
     "@noble/hashes": "^2.0.1",
+    "@solana/spl-memo": "^0.2.5",
+    "@solana/web3.js": "^1.98.4",
+    "@sqds/multisig": "^2.1.4",
     "fastify": "^5.7.4",
-    "tweetnacl": "^1.0.3"
+    "tweetnacl": "^1.0.3",
+    "x402-solana": "^2.0.4"
   }
 }
