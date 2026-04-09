@@ -174,6 +174,33 @@ export class SquadsGovernance {
     }
 
     /**
+     * CRYPTOGRAPHIC LOCK: 2-of-2 Squads Enclave Co-Signer
+     * If the firewall approves the agent's action, the TEE actively signs the Squads proposal.
+     * This mathematically forces the agent to route through Aegis.
+     */
+    public async coSignProposal(
+        multisigPda: PublicKey,
+        transactionIndex: bigint,
+        enclaveKeypair: Keypair
+    ): Promise<string> {
+        try {
+            // Approve the proposal on-chain using the @sqds/multisig SDK
+            // The TEE (enclaveKeypair) provides the second signature required for execution
+            const signature = await multisig.rpc.proposalApprove({
+                connection: this.connection,
+                feePayer: enclaveKeypair,
+                multisigPda,
+                transactionIndex,
+                member: enclaveKeypair,
+            });
+            
+            return signature;
+        } catch (e: any) {
+            throw new Error(`Failed to co-sign Squads proposal: ${e.message}`);
+        }
+    }
+
+    /**
      * Create the Squads multisig configuration for deploying a new governance vault.
      * Returns the configuration object and instructions (not executed — for demo/docs).
      */

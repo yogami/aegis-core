@@ -18,6 +18,7 @@ import {
     SystemProgram,
     TransactionInstruction,
     LAMPORTS_PER_SOL,
+    Connection,
 } from '@solana/web3.js';
 import { ToolExecutionReceipt } from '../types';
 import { AegisSigner } from './AegisSigner';
@@ -95,9 +96,18 @@ const DEFAULT_CONFIG: FirewallConfig = {
 export class SolanaTransactionFirewall {
     private config: FirewallConfig;
     private signer: AegisSigner;
+    private connections: Connection[];
 
-    constructor(signer: AegisSigner, config?: Partial<FirewallConfig>) {
+    constructor(
+        signer: AegisSigner, 
+        connections: Connection[], 
+        config?: Partial<FirewallConfig>
+    ) {
         this.signer = signer;
+        this.connections = connections;
+        if (!this.connections || this.connections.length === 0) {
+            throw new Error("At least one RPC connection is required");
+        }
         this.config = { ...DEFAULT_CONFIG, ...config };
     }
 
@@ -208,6 +218,114 @@ export class SolanaTransactionFirewall {
             // Clamp risk score
             riskScore = Math.min(riskScore, 1.0);
 
+            // SIMULATION: Pre-Flight BFT RPC Consensus
+            try {
+                // Execute simulateTransaction concurrently with 400ms timeout
+                const BFT_TIMEOUT_MS = 400;
+                
+                const simPromises = this.connections.map(conn => {
+                    return Promise.race([
+                        conn.simulateTransaction(tx),
+                        new Promise<never>((_, reject) => 
+                            setTimeout(() => reject(new Error('RPC Timeout')), BFT_TIMEOUT_MS)
+                        )
+                    ]);
+                });
+
+                const settledResults = await Promise.allSettled(simPromises);
+                
+                const validSimulations = settledResults.filter(
+                    (res): res is PromiseFulfilledResult<any> => res.status === 'fulfilled' && !res.value.value.err
+                );
+                
+                const errSimulations = settledResults.filter(
+                    (res): res is PromiseFulfilledResult<any> => res.status === 'fulfilled' && !!res.value.value.err
+                );
+
+                const totalNodes = this.connections.length;
+                const requiredQuorum = Math.floor(totalNodes / 2) + 1;
+
+                // Hash logs to detect splits
+                const logHashes = new Map<string, number>();
+                let consensusLogs: string[] = [];
+                let maxLogVoters = 0;
+
+                for (const sim of validSimulations) {
+                    const simLogs = sim.value.value.logs || [];
+                    const hashStr = simLogs.join('');
+                    const currentVotes = (logHashes.get(hashStr) || 0) + 1;
+                    logHashes.set(hashStr, currentVotes);
+
+                    if (currentVotes > maxLogVoters) {
+                        maxLogVoters = currentVotes;
+                        consensusLogs = simLogs;
+                    }
+                }
+
+                // If BFT Quorum fails (too many timeouts, or divided logs)
+                if (maxLogVoters < requiredQuorum) {
+                    // Fail closed if we cannot reach a supermajority on safety
+                    flags.push({
+                        severity: 'CRITICAL',
+                        rule: 'RPC_QUORUM_FAILURE',
+                        detail: `Failed to achieve BFT consensus among RPC nodes. Maximum matching state: ${maxLogVoters}/${totalNodes}. Failing closed to prevent eclipse attack.`
+                    });
+                    riskScore = 1.0;
+                    euArticles.push('Article 15 (Accuracy, Robustness, Cybersecurity)');
+                    mitreTechniques.push('T1565 (Data Manipulation: Stored Data Manipulation)');
+                    
+                    // Fallback logs to empty to trigger hard block processing later
+                    consensusLogs = [];
+                }
+                
+                if (errSimulations.length >= requiredQuorum) {
+                    flags.push({
+                        severity: 'HIGH',
+                        rule: 'SIMULATION_ERROR',
+                        detail: `Transaction simulation failed quorum: ${JSON.stringify(errSimulations[0].value.value.err)}`
+                    });
+                    riskScore += 0.3;
+                    euArticles.push('Article 15 (Accuracy, Robustness, Cybersecurity)');
+                }
+
+                // Parse logs from the CONCENSUS state to find ALL executed programs (including CPIs)
+                const logs = consensusLogs;
+                const executedPrograms = new Set<string>();
+                
+                const programInvokeRegex = /Program (\w+) invoke/g;
+                for (const logLine of logs) {
+                    let match;
+                    while ((match = programInvokeRegex.exec(logLine)) !== null) {
+                        executedPrograms.add(match[1]);
+                    }
+                }
+
+                if (this.config.blockUnknownPrograms) {
+                    for (const pid of executedPrograms) {
+                        if (!this.config.allowedPrograms.includes(pid)) {
+                            flags.push({
+                                severity: 'CRITICAL',
+                                rule: 'HIDDEN_CPI_UNKNOWN_PROGRAM',
+                                detail: `Simulation revealed hidden CPI to unknown program ${pid}. Critical supply chain risk.`
+                            });
+                            riskScore = 1.0; // Instant hard block
+                            euArticles.push('Article 15 (Accuracy, Robustness, Cybersecurity)');
+                            mitreTechniques.push('T1203 (Exploitation for Client Execution)');
+                        }
+                    }
+                }
+            } catch (simError: any) {
+                // We don't hard block on network failure of simulation, but we flag it
+                flags.push({
+                    severity: 'MEDIUM',
+                    rule: 'SIMULATION_UNAVAILABLE',
+                    detail: `Could not reach RPC for pre-flight simulation: ${simError.message}`
+                });
+            }
+
+            // Clamp risk score again just in case simulation spiked it
+            riskScore = Math.min(riskScore, 1.0);
+
             // Determine decision
             let decision: FirewallDecision;
             if (flags.some(f => f.severity === 'CRITICAL')) {
@@ -253,6 +371,7 @@ export class SolanaTransactionFirewall {
                 receipt: receiptData,
                 euAiActArticles: [...new Set(euArticles)],
                 mitreTechniques: [...new Set(mitreTechniques)],
+                executedPrograms: Array.from(executedPrograms),
             };
         } catch (e: any) {
             return {
@@ -266,6 +385,7 @@ export class SolanaTransactionFirewall {
                 }],
                 euAiActArticles: ['Article 15 (Accuracy, Robustness, Cybersecurity)'],
                 mitreTechniques: ['T1027 (Obfuscated Files or Information)'],
+                executedPrograms: [],
             };
         }
     }

@@ -36,6 +36,11 @@ export class AegisSigner {
         return bytesToHex(signedBytes);
     }
 
+    public getKeypair(): import('@solana/web3.js').Keypair {
+        const { Keypair } = require('@solana/web3.js');
+        return Keypair.fromSecretKey(this.privateKey);
+    }
+
     public verify(message: string, signatureHex: string, publicKeyHex: string): boolean {
         const messageBytes = new TextEncoder().encode(message);
         const signatureBytes = hexToBytes(signatureHex);

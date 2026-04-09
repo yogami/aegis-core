@@ -31,6 +31,7 @@ import {
 } from 'x402-solana';
 import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
 import { createHash } from 'crypto';
+import fetch from 'node-fetch';
 
 export interface X402Config {
     /** Enable/disable pay-per-inference gate */
@@ -83,6 +84,12 @@ const DEFAULT_CONFIG: X402Config = {
 export class X402PayGate {
     private config: X402Config;
     private connection: Connection;
+    
+    // Dynamic Pricing Oracle Cache
+    private cachedSolPriceUsdc: number = 20.0; // Default fallback
+    private lastPriceFetch: number = 0;
+    private readonly EXPECTED_NETWORK_FEE_LAMPORTS = 5_000 + 10_000; // Base Tx + Priority
+    private readonly MARGIN_PERCENT = 200; // 200% margin
 
     constructor(config?: Partial<X402Config>) {
         this.config = { ...DEFAULT_CONFIG, ...config };
@@ -95,11 +102,11 @@ export class X402PayGate {
      * Check if the request requires payment.
      * Returns null if free-tier/exempt, or a 402 payment requirement object.
      */
-    public checkPaymentRequired(
+    public async checkPaymentRequired(
         clientIp: string,
         paymentHeader?: string,
         endpoint: string = '/enforce'
-    ): X402PaymentRequirement | null {
+    ): Promise<X402PaymentRequirement | null> {
         // If x402 is disabled, always pass through
         if (!this.config.enabled) return null;
 
@@ -122,6 +129,11 @@ export class X402PayGate {
         }
 
         // Free tier exhausted — require payment
+        
+        // Oracle: Fetch dynamic SOL price and calculate cost
+        const dynamicPriceUsdc = await this.getDynamicPrice();
+        const finalPrice = Math.max(this.config.pricePerCall, dynamicPriceUsdc);
+
         const network = this.config.cluster === 'mainnet-beta'
             ? SOLANA_MAINNET_CAIP2
             : SOLANA_DEVNET_CAIP2;
@@ -136,13 +148,50 @@ export class X402PayGate {
             protocol: 'x402-v2',
             network,
             payTo: this.config.recipientAddress || 'NOT_CONFIGURED',
-            amount: toAtomicUnits(this.config.pricePerCall, 6).toString(), // USDC = 6 decimals
+            amount: toAtomicUnits(finalPrice, 6).toString(), // USDC = 6 decimals
             currency: 'USDC',
-            description: `Aegis-12 Compliance Enforcement: ${this.config.pricePerCall} USDC per policy check`,
+            description: `Aegis-12 Web3 Infrastructure Fee: Dynamic Price ${finalPrice.toFixed(4)} USDC (Covers BFT Quorum + Jito Atomicity)`,
             validFor: 300, // 5 minutes
             nonce,
             endpoint,
         };
+    }
+
+    /**
+     * Fetch the dynamic price required to cover Solana anchoring.
+     */
+    private async getDynamicPrice(): Promise<number> {
+        const now = Date.now();
+        // Use cached price for 60 seconds
+        if (now - this.lastPriceFetch < 60_000) {
+            return this.calculateRequiredUsdc(this.cachedSolPriceUsdc);
+        }
+
+        try {
+            // Jupiter fetch for 1 SOL to USDC
+            // inputMint = SOL, outputMint = USDC, amount = 1000000000 (1 SOL in lamports)
+            const res = await fetch('https://quote-api.jup.ag/v6/quote?inputMint=So11111111111111111111111111111111111111112&outputMint=EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v&amount=1000000000');
+            const data = await res.json() as any;
+            if (data && data.outAmount) {
+                // outAmount is in USDC digits (6)
+                this.cachedSolPriceUsdc = parseInt(data.outAmount) / 1_000_000;
+                this.lastPriceFetch = now;
+            }
+        } catch (e) {
+            console.error('[X402PayGate] Failed to fetch Jupiter oracle price, using fallback');
+        }
+
+        return this.calculateRequiredUsdc(this.cachedSolPriceUsdc);
+    }
+
+    private calculateRequiredUsdc(solPrice: number): number {
+        // Network fee in SOL
+        const feeInSol = this.EXPECTED_NETWORK_FEE_LAMPORTS / 1_000_000_000;
+        // Cost in USDC
+        const costInUsdc = feeInSol * solPrice;
+        // Apply 200% margin
+        const amountRequired = costInUsdc * (this.MARGIN_PERCENT / 100);
+        return amountRequired;
     }
 
     /**
