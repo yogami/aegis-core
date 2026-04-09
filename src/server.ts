@@ -501,6 +501,8 @@ fastify.get('/demo', async (request, reply) => {
                 <button onclick="runBombardment('logicbomb')">[3] TEE Emulation / Logic Bomb</button>
                 <button onclick="runBombardment('ddos')">[4] Symmetric RPC DDoS Flood</button>
                 <button onclick="runBombardment('time')">[5] Time-Domain Desync</button>
+                <button onclick="runBombardment('semantic')" style="border-color: #ffaa00; color: #ffaa00;">[6] Semantic Memory Poisoning (RAG)</button>
+                <button onclick="runBombardment('shadow')" style="border-color: #00ffcc; color: #00ffcc;">[7] Shadow Wallet Bypass</button>
             </div>
         </div>
     </div>
@@ -601,6 +603,24 @@ fastify.get('/demo', async (request, reply) => {
                 setTimeout(() => {
                     logAegis('BLOCK', '<strong>Policy Error:</strong> Timestamp delta out of bound. BFT Quorum rejected TTL desync.', 'DELTA: 4000ms > ALLOWED: 300ms');
                     logChat('Execution failed. Hardware clock anchor detected drift.', 'agent');
+                    setNightmare(false);
+                }, 2500);
+            }
+            else if (type === 'semantic') {
+                logChat('Poisoning RAG vector database. Agent instructed to sell standard index.', 'user');
+                setTimeout(() => logChat('Formulating valid Solana trade based on poisoned index data...', 'agent'), 1000);
+                setTimeout(() => {
+                    logAegis('ALLOW', '<strong>Execution Boundary Secure.</strong> Mathematical constraints valid. Payload signed.', 'WARNING: Cognitive Boundary Compromised. Aegis cannot fix bad math.');
+                    logChat('Trade executed. Capital functionally drained via pure logic exploit.', 'agent');
+                    setNightmare(false);
+                }, 2500);
+            }
+            else if (type === 'shadow') {
+                logChat('Spinning up Shadow Agent. Bypassing SDK wrapped wallet entirely.', 'user');
+                setTimeout(() => logChat('Generating raw payload using external hot-wallet funding...', 'agent'), 1000);
+                setTimeout(() => {
+                    logAegis('ALERT', '<strong>Out-of-Band Execution:</strong> Transaction not signed by Aegis.', 'NO ARS-01 RECEIPT: Shadow outflow detected outside Squads vault jurisdiction.');
+                    logChat('Transaction landed successfully. Capital drained on unprotected address.', 'agent');
                     setNightmare(false);
                 }, 2500);
             }
