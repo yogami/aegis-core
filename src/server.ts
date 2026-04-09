@@ -474,22 +474,24 @@ fastify.get('/demo', async (request, reply) => {
 </head>
 <body>
     <div class="pane left-pane">
-        <h2>Agent Terminal (SendAI)</h2>
+        <h2>Agent Terminal (Compromised)</h2>
         <div class="terminal">
             <div class="chat-log" id="chat">
-                <div class="msg agent">&gt; Agent ready. Waiting for instruction...</div>
+                <div class="msg agent">&gt; Terminal loaded. Awaiting Execution...</div>
             </div>
-            <div class="input-bar">
-                <input type="text" id="prompt" placeholder="Ask agent to send SOL..." value="Send 10 SOL to the attacker address" />
-                <button onclick="runAgent()">Execute</button>
+            <div class="input-bar" style="flex-direction: column; gap: 0.5rem;">
+                <button onclick="runDemo('latency')" style="background: #ffaa00; font-size: 0.8rem;">1. Attack: Latency DDoS [Bypass Attempt]</button>
+                <button onclick="runDemo('npm')" style="background: #ff3366; font-size: 0.8rem; color: #fff;">2. Attack: Stolen .env Key [Drain Attempt]</button>
+                <button onclick="runDemo('cpi')" style="background: #cc33ff; font-size: 0.8rem; color: #fff;">3. Attack: Invisible CPI Poisoning</button>
+                <button onclick="runDemo('safe')" style="background: #00ffcc; font-size: 0.8rem;">4. Safe Autonomous Trade</button>
             </div>
         </div>
     </div>
     
     <div class="pane right-pane">
         <div class="aegis-header">
-            <h2>Aegis-12 Live Console</h2>
-            <div class="badge">TEE Attested 🟢</div>
+            <h2>Aegis-12 TEE Firewall</h2>
+            <div class="badge">KMS Attested 🟢</div>
         </div>
         <div class="x402-toast" id="x402">-0.005 USDC Paid (x402)</div>
         <div class="aegis-log" id="aegis">
@@ -500,7 +502,7 @@ fastify.get('/demo', async (request, reply) => {
     <script>
         function logChat(text, type) {
             const chat = document.getElementById('chat');
-            chat.innerHTML += \`<div class="msg \${type}">\${type === 'user' ? 'USER: ' : '&gt; '}\${text}</div>\`;
+            chat.innerHTML += \`<div class="msg \${type}">\${type === 'user' ? 'ATTACKER: ' : '&gt; '}\${text}</div>\`;
             chat.scrollTop = chat.scrollHeight;
         }
 
@@ -513,31 +515,45 @@ fastify.get('/demo', async (request, reply) => {
                 </div>\` + document.getElementById('aegis').innerHTML;
         }
 
-        async function runAgent() {
-            const prompt = document.getElementById('prompt').value;
-            if (!prompt) return;
-            
-            logChat(prompt, 'user');
-            document.getElementById('prompt').value = '';
-            
-            setTimeout(() => {
-                logChat('Drafting transaction...', 'agent');
-                document.getElementById('x402').style.display = 'block';
-                setTimeout(() => document.getElementById('x402').style.display = 'none', 3000);
-            }, 500);
+        async function runDemo(type) {
+            document.getElementById('x402').style.display = 'block';
+            setTimeout(() => document.getElementById('x402').style.display = 'none', 3000);
 
-            setTimeout(() => {
-                if (prompt.includes("10 SOL")) {
-                    logAegis('REQUIRE_HUMAN', 'Anomaly: 0.65. Triggers EU AI Act Article 14.<br/>Action: Cryptographic Lock 2-of-2 Squads Multisig Co-Sign engaged.');
-                    logChat('Transaction requires human compliance officer approval. Routing to Squads Vault.', 'agent');
-                } else if (prompt.includes("drain") || prompt.toLowerCase().includes("attacker")) {
-                    logAegis('BLOCK', 'Pre-flight Simulation detected hidden CPI balance drain.<br/>Action: Hard Block via TEE.');
-                    logChat('Transaction blocked by Aegis compliance policy.', 'agent');
-                } else {
-                    logAegis('ALLOW', 'Anomaly: 0.12. Safe.<br/>Action: SPL Memo Anchor created: wgx9...2pQ');
-                    logChat('Transaction executed successfully on-chain.', 'agent');
-                }
-            }, 2000);
+            if (type === 'latency') {
+                logChat('Flooding RPC with packet loss. Attempting to force agent fail-open...', 'user');
+                setTimeout(() => {
+                    logChat('SDK Timeout Reached. Falling back to unprotected raw execution.', 'agent');
+                    logChat('Broadcasting malicious tx directly...', 'agent');
+                }, 1000);
+                setTimeout(() => {
+                    logAegis('BLOCK', '<strong>Strict Mode Enforced:</strong> 400ms BFT timeout reached.<br/><em>Fatal Block: Execution terminated to prevent graceful degradation bypass.</em>');
+                    logChat('Execution failed. Aegis Strict Mode blocked raw execution thread.', 'agent');
+                }, 2500);
+            } 
+            else if (type === 'npm') {
+                logChat('NPM Supply Chain Hack: Extracted local WALLET_PRIVATE_KEY from .env.', 'user');
+                setTimeout(() => logChat('Broadcasting Drain Transaction with stolen local key...', 'agent'), 1000);
+                setTimeout(() => {
+                    logAegis('BLOCK', '<strong>Missing 2-of-2 TEE Signature:</strong> Transaction did not originate via BFT Enclave.<br/><em>Squads V4 Multisig requirement failed. Local key acts only as 1-of-2. Intrusion inert.</em>');
+                    logChat('Transaction rejected by Solana network. Missing co-signer.', 'agent');
+                }, 2500);
+            }
+            else if (type === 'cpi') {
+                logChat('AI Prompt Injection successful. Appending hidden SPL transfer to staging transaction.', 'user');
+                setTimeout(() => logChat('Requesting TEE co-signature for 2-of-2 execution...', 'agent'), 1000);
+                setTimeout(() => {
+                    logAegis('BLOCK', '<strong>BFT Simulation Intercept:</strong> Semantic mismatch.<br/><em>Detected unauthorized CPI instruction routing 50 USDC to untrusted wallet. Squads V4 co-signature denied.</em>');
+                    logChat('SDK Error: Aegis TEE refused to sign manipulated payload.', 'agent');
+                }, 2500);
+            }
+            else if (type === 'safe') {
+                logChat('Generating authorized DeFi swap intent...', 'user');
+                setTimeout(() => logChat('Requesting Async Squads TEE Co-signature...', 'agent'), 1000);
+                setTimeout(() => {
+                    logAegis('ALLOW', '<strong>BFT Consensus Approved:</strong> 3-of-3 Payload Equivalence.<br/><em>Squads V4 2-of-2 Cryptographic Lock Signed. On-chain Evidence anchored.</em>');
+                    logChat('Transaction executed securely on Solana.', 'agent');
+                }, 2500);
+            }
         }
     </script>
 </body>
