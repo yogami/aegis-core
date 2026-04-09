@@ -8,7 +8,7 @@ import { KMSProvider } from './infrastructure/KMSProvider';
 import { X402PayGate } from './infrastructure/X402PayGate';
 import { JitoBundler } from './infrastructure/JitoBundler';
 import { TrustTier, ToolExecutionReceipt } from './types';
-import { crypto } from 'crypto'; // for uuid simulation if needed
+import crypto from 'crypto'; // for uuid simulation if needed
 
 const fastify = Fastify({ logger: true });
 
