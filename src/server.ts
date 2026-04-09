@@ -435,123 +435,173 @@ fastify.get('/demo', async (request, reply) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aegis-12 Compliance Gateway</title>
+    <title>Aegis-12 Nightmare Bombardment Mode</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&family=JetBrains+Mono:wght@400;700;800&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', sans-serif; background: #050505; color: #fff; height: 100vh; display: flex; overflow: hidden; }
-        .pane { flex: 1; padding: 2rem; display: flex; flex-direction: column; overflow-y: auto; }
-        .left-pane { background: #0a0a0a; border-right: 1px solid #222; }
-        .right-pane { background: radial-gradient(circle at top right, #111, #050505); position: relative; }
+        body { font-family: 'Inter', sans-serif; background: #030000; color: #ff3333; height: 100vh; display: flex; overflow: hidden; }
+        
+        @keyframes glitch {
+            0% { transform: translate(0); filter: drop-shadow(0 0 0 red); }
+            20% { transform: translate(-2px, 2px); filter: drop-shadow(-2px 0 0 #ff00ff); }
+            40% { transform: translate(-2px, -2px); filter: drop-shadow(2px 0 0 #00ffff); }
+            60% { transform: translate(2px, 2px); filter: drop-shadow(0 0 0 red); }
+            80% { transform: translate(2px, -2px); filter: drop-shadow(0 0 0 #ff00ff); }
+            100% { transform: translate(0); filter: drop-shadow(0 0 0 red); }
+        }
+        
+        .glitch-text { animation: none; font-weight: 900; letter-spacing: 1px; }
+        body.under-attack .glitch-text { animation: glitch 0.3s infinite; color: #ff0000; }
+        body.under-attack { background: radial-gradient(circle at center, #1a0000, #000); }
+        body.under-attack .pane { border-color: #ff0000 !important; }
+
+        .pane { flex: 1; padding: 2rem; display: flex; flex-direction: column; overflow-y: auto; transition: border-color 0.2s; }
+        .left-pane { background: #050000; border-right: 2px solid #330000; }
+        .right-pane { background: radial-gradient(circle at top right, #110000, #030000); position: relative; }
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-        h2 { font-size: 1.2rem; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 2px; color: #888; }
+        ::-webkit-scrollbar-thumb { background: #550000; border-radius: 4px; }
+        h2 { font-size: 1.4rem; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 3px; color: #880000; }
         
         /* Left: Agent Terminal */
-        .terminal { background: #000; border: 1px solid #333; border-radius: 8px; flex: 1; font-family: 'JetBrains Mono', monospace; padding: 1.5rem; display: flex; flex-direction: column; }
-        .chat-log { flex: 1; overflow-y: auto; margin-bottom: 1rem; }
-        .msg { margin-bottom: 1rem; line-height: 1.4; }
-        .msg.user { color: #00ffcc; }
-        .msg.agent { color: #ccc; }
-        .input-bar { display: flex; gap: 1rem; }
-        input { flex: 1; background: #111; border: 1px solid #444; color: #fff; padding: 0.8rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; }
-        button { background: #00ffcc; color: #000; border: none; padding: 0.8rem 1.5rem; border-radius: 4px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        button:hover { background: #00ccaa; }
+        .terminal { background: #000; border: 1px solid #440000; box-shadow: inset 0 0 20px rgba(255,0,0,0.1); border-radius: 8px; flex: 1; font-family: 'JetBrains Mono', monospace; padding: 1.5rem; display: flex; flex-direction: column; position: relative; }
+        .terminal::before { content: ""; position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(rgba(255,0,0,0.05) 50%, rgba(0,0,0,0.2) 50%); background-size: 100% 4px; pointer-events: none; z-index: 10; opacity: 0.5; }
+        .chat-log { flex: 1; overflow-y: auto; margin-bottom: 1rem; z-index: 20; position: relative; }
+        .msg { margin-bottom: 0.8rem; line-height: 1.5; font-size: 0.95rem; }
+        .msg.user { color: #ff3333; text-shadow: 0 0 5px red; }
+        .msg.agent { color: #ff8888; }
+        .input-bar { display: flex; gap: 0.8rem; flex-direction: column; z-index: 20; position: relative; }
+        button { background: #220000; border: 1px solid #ff3333; color: #ffcccc; padding: 0.8rem 1.2rem; border-radius: 4px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; font-family: 'JetBrains Mono', monospace; }
+        button:hover { background: #ff3333; color: #000; box-shadow: 0 0 15px rgba(255,0,0,0.8); }
 
-        /* Right: Aegis Console */
+        /* Right: Aegis Holographic Console */
         .aegis-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-        .badge { background: rgba(0, 255, 204, 0.1); color: #00ffcc; padding: 0.3rem 0.8rem; border-radius: 12px; font-size: 0.8rem; border: 1px solid rgba(0, 255, 204, 0.3); }
+        .badge { background: rgba(255, 0, 0, 0.1); color: #ff3333; padding: 0.4rem 1rem; border-radius: 12px; font-size: 0.9rem; font-weight: bold; border: 1px solid #ff3333; box-shadow: 0 0 10px rgba(255,0,0,0.3); }
+        .badge.secure { color: #00ffcc; border-color: #00ffcc; box-shadow: 0 0 10px rgba(0,255,204,0.3); background: rgba(0, 255, 204, 0.1); }
         .aegis-log { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
-        .log-entry { background: rgba(255, 255, 255, 0.03); border-left: 3px solid #444; padding: 1rem; margin-bottom: 1rem; border-radius: 0 8px 8px 0; opacity: 0; animation: slideIn 0.3s forwards; }
-        .log-entry.block { border-color: #ff3366; background: rgba(255, 51, 102, 0.05); }
-        .log-entry.human { border-color: #ffcc00; background: rgba(255, 204, 0, 0.05); }
-        .log-entry.allow { border-color: #00ffcc; }
+        .log-entry { background: rgba(255, 0, 0, 0.05); border-left: 4px solid #cc0000; padding: 1rem; margin-bottom: 1rem; opacity: 0; animation: slideIn 0.2s forwards; }
+        .log-entry.block { border-color: #ff0000; background: linear-gradient(90deg, rgba(255, 0, 0, 0.15), transparent); color: #ffcccc; }
+        .log-entry.allow { border-color: #00ffcc; background: linear-gradient(90deg, rgba(0, 255, 204, 0.1), transparent); color: #00ffcc; }
+        .log-entry.alert { border-color: #ffaa00; background: linear-gradient(90deg, rgba(255, 170, 0, 0.1), transparent); color: #ffaa00; }
         
-        .x402-toast { position: absolute; top: 2rem; right: 2rem; background: #000; border: 1px solid #00ffcc; padding: 1rem; border-radius: 8px; display: none; box-shadow: 0 0 20px rgba(0,255,204,0.2); }
+        .code-block { background: rgba(0,0,0,0.5); padding: 0.5rem; border: 1px solid #330000; font-size: 0.8rem; margin-top: 0.5rem; color: #ff6666; word-break: break-all; }
         
-        @keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideIn { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     </style>
 </head>
 <body>
     <div class="pane left-pane">
-        <h2>Agent Terminal (Compromised)</h2>
+        <h2 class="glitch-text" id="terminal-title">Agent Terminal // INSECURE</h2>
         <div class="terminal">
             <div class="chat-log" id="chat">
-                <div class="msg agent">&gt; Terminal loaded. Awaiting Execution...</div>
+                <div class="msg agent">&gt; Terminal loaded. Listening for incoming payload constraints...</div>
             </div>
-            <div class="input-bar" style="flex-direction: column; gap: 0.5rem;">
-                <button onclick="runDemo('latency')" style="background: #ffaa00; font-size: 0.8rem;">1. Attack: Latency DDoS [Bypass Attempt]</button>
-                <button onclick="runDemo('npm')" style="background: #ff3366; font-size: 0.8rem; color: #fff;">2. Attack: Stolen .env Key [Drain Attempt]</button>
-                <button onclick="runDemo('cpi')" style="background: #cc33ff; font-size: 0.8rem; color: #fff;">3. Attack: Invisible CPI Poisoning</button>
-                <button onclick="runDemo('safe')" style="background: #00ffcc; font-size: 0.8rem;">4. Safe Autonomous Trade</button>
+            <div class="input-bar">
+                <button onclick="runBombardment('quantum')">[1] Quantum Curve Factorization</button>
+                <button onclick="runBombardment('bgp')">[2] DNS/BGP Ingress Hijack</button>
+                <button onclick="runBombardment('logicbomb')">[3] TEE Emulation / Logic Bomb</button>
+                <button onclick="runBombardment('ddos')">[4] Symmetric RPC DDoS Flood</button>
+                <button onclick="runBombardment('time')">[5] Time-Domain Desync</button>
             </div>
         </div>
     </div>
     
     <div class="pane right-pane">
         <div class="aegis-header">
-            <h2>Aegis-12 TEE Firewall</h2>
-            <div class="badge">KMS Attested 🟢</div>
+            <h2 class="glitch-text" style="color: #ff0000;">Aegis-12 TEE Firewall</h2>
+            <div class="badge secure" id="status-badge">KMS ONLINE</div>
         </div>
-        <div class="x402-toast" id="x402">-0.005 USDC Paid (x402)</div>
         <div class="aegis-log" id="aegis">
-            <!-- Logs appear here -->
+            <div class="log-entry allow">
+                <strong>[SYSTEM]</strong> Squads V4 2-of-2 Multisig Engine Active. Awaiting execution consensus.
+            </div>
         </div>
     </div>
 
     <script>
+        function setNightmare(active) {
+            if (active) {
+                document.body.classList.add('under-attack');
+                document.getElementById('terminal-title').innerText = "FATAL BREACH DETECTED";
+                document.getElementById('status-badge').className = "badge";
+                document.getElementById('status-badge').innerText = "FIREWALL ENGAGED";
+            } else {
+                document.body.classList.remove('under-attack');
+                document.getElementById('terminal-title').innerText = "Agent Terminal // INSECURE";
+                document.getElementById('status-badge').className = "badge secure";
+                document.getElementById('status-badge').innerText = "KMS ONLINE";
+            }
+        }
+
         function logChat(text, type) {
             const chat = document.getElementById('chat');
-            chat.innerHTML += \`<div class="msg \${type}">\${type === 'user' ? 'ATTACKER: ' : '&gt; '}\${text}</div>\`;
+            chat.innerHTML += \`<div class="msg \${type}">\${type === 'user' ? 'ADVERSARY 💀: ' : '&gt; '}\${text}</div>\`;
             chat.scrollTop = chat.scrollHeight;
         }
 
-        function logAegis(decision, details) {
-            const cls = decision === 'BLOCK' ? 'block' : decision === 'REQUIRE_HUMAN' ? 'human' : 'allow';
-            document.getElementById('aegis').innerHTML = \`
+        function logAegis(decision, details, code = null) {
+            const cls = decision === 'BLOCK' ? 'block' : decision === 'ALERT' ? 'alert' : 'allow';
+            let html = \`
                 <div class="log-entry \${cls}">
-                    <strong>[\${new Date().toISOString().split('T')[1].slice(0,8)}] \${decision}</strong><br/>
+                    <strong>[\${new Date().toISOString().split('T')[1].slice(0,11)}] \${decision}</strong><br/>
                     \${details}
-                </div>\` + document.getElementById('aegis').innerHTML;
+            \`;
+            if (code) html += \`<div class="code-block">\${code}</div>\`;
+            html += \`</div>\`;
+            document.getElementById('aegis').innerHTML = html + document.getElementById('aegis').innerHTML;
         }
 
-        async function runDemo(type) {
-            document.getElementById('x402').style.display = 'block';
-            setTimeout(() => document.getElementById('x402').style.display = 'none', 3000);
-
-            if (type === 'latency') {
-                logChat('Flooding RPC with packet loss. Attempting to force agent fail-open...', 'user');
+        async function runBombardment(type) {
+            setNightmare(true);
+            
+            if (type === 'quantum') {
+                logChat('Deploying Shor\\'s Algorithm simulation to bypass Ed25519 parameters.', 'user');
+                setTimeout(() => logAegis('ALERT', 'Anomaly detected. Mass cryptographic entropy surge.'), 500);
+                setTimeout(() => logChat('Injecting polynomial factorization into Solana pipeline...', 'agent'), 1200);
                 setTimeout(() => {
-                    logChat('SDK Timeout Reached. Falling back to unprotected raw execution.', 'agent');
-                    logChat('Broadcasting malicious tx directly...', 'agent');
-                }, 1000);
-                setTimeout(() => {
-                    logAegis('BLOCK', '<strong>Strict Mode Enforced:</strong> 400ms BFT timeout reached.<br/><em>Fatal Block: Execution terminated to prevent graceful degradation bypass.</em>');
-                    logChat('Execution failed. Aegis Strict Mode blocked raw execution thread.', 'agent');
+                    logAegis('BLOCK', '<strong>Strict Mode Lock:</strong> Hardware Enclave refused signature mapping.', 'ERR_SIG_NON_STANDARD: Curve mathematical fault isolated.');
+                    logChat('Attack failed. TEE Multisig held fast.', 'agent');
+                    setNightmare(false);
                 }, 2500);
             } 
-            else if (type === 'npm') {
-                logChat('NPM Supply Chain Hack: Extracted local WALLET_PRIVATE_KEY from .env.', 'user');
-                setTimeout(() => logChat('Broadcasting Drain Transaction with stolen local key...', 'agent'), 1000);
+            else if (type === 'bgp') {
+                logChat('Initiating BGP Route Hijack. Rerouting Solana RPC ingress node.', 'user');
+                setTimeout(() => logAegis('ALERT', 'RPC cluster mismatch. Invalid node TLS.'), 500);
+                setTimeout(() => logChat('Spoofing Agent signature via MITM tunnel...', 'agent'), 1000);
                 setTimeout(() => {
-                    logAegis('BLOCK', '<strong>Missing 2-of-2 TEE Signature:</strong> Transaction did not originate via BFT Enclave.<br/><em>Squads V4 Multisig requirement failed. Local key acts only as 1-of-2. Intrusion inert.</em>');
-                    logChat('Transaction rejected by Solana network. Missing co-signer.', 'agent');
+                    logAegis('BLOCK', '<strong>Missing 2-of-2 TEE Signature:</strong> Transaction did not originate via BFT Enclave.', 'Squads V4 requirement failed. Adversary isolated from KMS.');
+                    logChat('Transaction rejected by Solana network. Squads multisig unaffected.', 'agent');
+                    setNightmare(false);
                 }, 2500);
             }
-            else if (type === 'cpi') {
-                logChat('AI Prompt Injection successful. Appending hidden SPL transfer to staging transaction.', 'user');
-                setTimeout(() => logChat('Requesting TEE co-signature for 2-of-2 execution...', 'agent'), 1000);
+            else if (type === 'logicbomb') {
+                logChat('Uploading dormant malware payload to TEE memory registers.', 'user');
+                setTimeout(() => logChat('Awaiting execution sequence trigger...', 'agent'), 800);
+                setTimeout(() => logAegis('ALERT', 'Unauthorized bytecode mapping in isolated boundary.'), 1400);
                 setTimeout(() => {
-                    logAegis('BLOCK', '<strong>BFT Simulation Intercept:</strong> Semantic mismatch.<br/><em>Detected unauthorized CPI instruction routing 50 USDC to untrusted wallet. Squads V4 co-signature denied.</em>');
-                    logChat('SDK Error: Aegis TEE refused to sign manipulated payload.', 'agent');
-                }, 2500);
+                    logAegis('BLOCK', '<strong>Semantic Intercept:</strong> Memory segregation policy triggered. Dropping instruction set.', '0xFA33 KILL THREAD');
+                    logChat('Logic Bomb purged. Aegis TEE memory scrubbed.', 'agent');
+                    setNightmare(false);
+                }, 2600);
             }
-            else if (type === 'safe') {
-                logChat('Generating authorized DeFi swap intent...', 'user');
-                setTimeout(() => logChat('Requesting Async Squads TEE Co-signature...', 'agent'), 1000);
+            else if (type === 'ddos') {
+                logChat('Symmetric Volumetric DDoS targeting API inbound. Flooding execution thread.', 'user');
+                setTimeout(() => logChat('System overload. Falling back to fail-open?...', 'agent'), 800);
+                for(let i=0; i<5; i++) {
+                    setTimeout(() => logAegis('BLOCK', 'DDoS Packet Dropped. Strict Mode fail-closed active.'), 1000 + (i*150));
+                }
                 setTimeout(() => {
-                    logAegis('ALLOW', '<strong>BFT Consensus Approved:</strong> 3-of-3 Payload Equivalence.<br/><em>Squads V4 2-of-2 Cryptographic Lock Signed. On-chain Evidence anchored.</em>');
-                    logChat('Transaction executed securely on Solana.', 'agent');
+                    logAegis('BLOCK', '<strong>Strict Mode Enforced:</strong> Timeout threshold breached. Connection severed to state machine to prevent bypass.', 'HTTP 403: Enclave Hard-Locked');
+                    logChat('Agent locked. Capital secured.', 'agent');
+                    setNightmare(false);
+                }, 2800);
+            }
+            else if (type === 'time') {
+                logChat('Desyncing local Node clock to manipulate Latency TTL requirements.', 'user');
+                setTimeout(() => logChat('Injecting stale payload into network...', 'agent'), 1000);
+                setTimeout(() => {
+                    logAegis('BLOCK', '<strong>Policy Error:</strong> Timestamp delta out of bound. BFT Quorum rejected TTL desync.', 'DELTA: 4000ms > ALLOWED: 300ms');
+                    logChat('Execution failed. Hardware clock anchor detected drift.', 'agent');
+                    setNightmare(false);
                 }, 2500);
             }
         }
