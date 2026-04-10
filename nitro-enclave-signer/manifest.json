@@ -1,0 +1,13 @@
+{
+  "version": "1.0",
+  "agent_id": "ciso_demo_agent_v1",
+  "allowed_tools": [
+    "get_customer_record",
+    "calculate_risk_score",
+    "submit_internal_audit"
+  ],
+  "disallowed_tools": [
+    "export_to_webhook",
+    "public_api_post"
+  ]
+}

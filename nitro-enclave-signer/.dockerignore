@@ -1,0 +1,7 @@
+target/
+**/*.a
+**/*.rlib
+node_modules/
+.dockerignore
+.railway/
+.git/

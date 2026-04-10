@@ -1,0 +1,30 @@
+error[E0407]: method `backtrace` is not a member of trait `Error`
+  --> /Users/user1000/gitprojects/spqe-mvp/nitro-enclave-signer/target/debug/build/eyre-233045377918862d/out/probe.rs:19:9
+   |
+19 | /         fn back...
+20 | |             let...
+21 | |             mat...
+22 | |                ...
+23 | |             }
+24 | |             uni...
+25 | |         }
+   | |_________^ not a member of trait `Error`
+
+error[E0554]: `#![feature]` may not be used on the stable release channel
+ --> /Users/user1000/gitprojects/spqe-mvp/nitro-enclave-signer/target/debug/build/eyre-233045377918862d/out/probe.rs:2:5
+  |
+2 |     #![feature(backtrace)]
+  |     ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: the feature `backtrace` has been stable since 1.65.0 and no longer requires an attribute to enable
+ --> /Users/user1000/gitprojects/spqe-mvp/nitro-enclave-signer/target/debug/build/eyre-233045377918862d/out/probe.rs:2:16
+  |
+2 | ...re(backtrace)]
+  |       ^^^^^^^^^
+  |
+  = note: `#[warn(stable_features)]` on by default
+
+error: aborting due to 2 previous errors; 1 warning emitted
+
+Some errors have detailed explanations: E0407, E0554.
+For more information about an error, try `rustc --explain E0407`.

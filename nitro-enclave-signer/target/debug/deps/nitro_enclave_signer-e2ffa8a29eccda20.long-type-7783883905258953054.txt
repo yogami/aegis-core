@@ -1,0 +1,2 @@
+std::option::Option<impl Future<Output = Result<hyper::Response<http_body_util::Full<hyper::body::Bytes>>, hyper::Error>>>
+Rc<UnsafeCell<ReseedingRng<rand_chacha::chacha::ChaCha12Core, OsRng>>>

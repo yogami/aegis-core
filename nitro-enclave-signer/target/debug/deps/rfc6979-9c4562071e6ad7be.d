@@ -1,0 +1,9 @@
+/Users/user1000/gitprojects/spqe-mvp/nitro-enclave-signer/target/debug/deps/rfc6979-9c4562071e6ad7be.d: /Users/user1000/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rfc6979-0.4.0/src/lib.rs /Users/user1000/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rfc6979-0.4.0/src/ct_cmp.rs /Users/user1000/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rfc6979-0.4.0/src/../README.md
+
+/Users/user1000/gitprojects/spqe-mvp/nitro-enclave-signer/target/debug/deps/librfc6979-9c4562071e6ad7be.rlib: /Users/user1000/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rfc6979-0.4.0/src/lib.rs /Users/user1000/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rfc6979-0.4.0/src/ct_cmp.rs /Users/user1000/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rfc6979-0.4.0/src/../README.md
+
+/Users/user1000/gitprojects/spqe-mvp/nitro-enclave-signer/target/debug/deps/librfc6979-9c4562071e6ad7be.rmeta: /Users/user1000/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rfc6979-0.4.0/src/lib.rs /Users/user1000/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rfc6979-0.4.0/src/ct_cmp.rs /Users/user1000/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rfc6979-0.4.0/src/../README.md
+
+/Users/user1000/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rfc6979-0.4.0/src/lib.rs:
+/Users/user1000/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rfc6979-0.4.0/src/ct_cmp.rs:
+/Users/user1000/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rfc6979-0.4.0/src/../README.md:

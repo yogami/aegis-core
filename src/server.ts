@@ -234,10 +234,11 @@ fastify.post('/solana/enforce-tx', async (request, reply) => {
     try {
         const body = request.body as {
             serializedTx: string;       // Base64-encoded transaction
+            payloadHash?: string;       // Required: The natively mapped SHA-256 Public Input constraint
             walletPubkey: string;
             agentTier?: string;
             environment?: string;
-            useSquadsCoSign?: boolean;
+            useZKCoprocessor?: boolean; // Async Groth16 verification flag
         };
 
         if (!body.serializedTx || !body.walletPubkey) {
@@ -263,31 +264,74 @@ fastify.post('/solana/enforce-tx', async (request, reply) => {
             }
         }
 
-        // --- ASYNC SQUADS V4 ORCHESTRATION ENGINE ---
-        if (body.useSquadsCoSign) {
-            const txnId = crypto.randomUUID();
-            asyncMap.set(txnId, { status: 'PENDING_BFT_CONSENSUS' });
+        // --- AEGİS-12 ZK-COPROCESSOR ASYNC ENGINE ---
+        if (body.useZKCoprocessor) {
+            if (!body.payloadHash) {
+                return reply.status(400).send({
+                    error: 'DeepResearch Flaw A Enforcement: Missing payloadHash Public Input boundary.',
+                });
+            }
 
-            // Background worker
+            const txnId = crypto.randomUUID();
+            asyncMap.set(txnId, { status: 'PENDING_ZK_SNARK' });
+
+            // Background worker (Simulating Automata AVS SNARK Generation)
             Promise.resolve().then(async () => {
                 try {
+                    // Pre-verification (Aegis Ingress Firewall)
                     const result = await solanaFirewall.inspectTransaction(
                         body.serializedTx,
                         body.walletPubkey
                     );
                     
-                    if (result.decision === 'ALLOW') {
-                        // In reality, this would submit to the Squads Program
+                    // --- HOTL: Phase 24 ("Pivot 22") Policy Engine Verification ---
+                    let policyDecision = result.decision;
+                    try {
+                        const policyRes = await fetch(process.env.POLICY_EVALUATOR_URL + "/evaluate", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                action: "transfer",
+                                target: body.walletPubkey,
+                                amount: 1000, // Dummy decode for local simulation
+                                agent_id: body.agentTier || "eliza-bot-01",
+                                memo: "Aegis-12 Transaction Executing",
+                                nonce: txnId,
+                                timestamp_ms: Date.now()
+                            })
+                        });
+                        const policyVerdict = await policyRes.json();
+                        if (policyVerdict.approved === false) {    
+                            policyDecision = "REQUIRE_HUMAN";
+                            result.reason = policyVerdict.reasoning;
+                        }
+                    } catch(err) {
+                        console.warn("Policy Evaluator mock offline. Safely failing open for local hackathon demo.", err);
+                    }
+
+                    if (policyDecision === 'ALLOW') {
+                        // Simulate the 5-minute ZK-compile time natively
+                        // For the hackathon demo, we shorten this to 15 seconds
+                        await new Promise(resolve => setTimeout(resolve, 15000));
+                        
+                        const dummySnark = {
+                            pi_a: ["0x2c6f...", "0x0b8a..."],
+                            pi_b: [["0x1a2b...", "0x3c4d..."], ["0x5e6f...", "0x7a8b..."]],
+                            pi_c: ["0x2211...", "0xffee..."],
+                            public_inputs: [body.payloadHash] // Cryptographically bound P-Input
+                        };
+                        
                         const fakeSquadsSignature = await signer.signPayloadRemotely(body.serializedTx);
                         asyncMap.set(txnId, { 
-                            status: 'APPROVED', 
+                            status: 'SNARK_GENERATED', 
                             signature: fakeSquadsSignature,
                             decision: 'ALLOW',
+                            snarkProof: dummySnark,
                             ars01Receipt: result
                         });
                     } else {
                         asyncMap.set(txnId, { 
-                            status: result.decision, // BLOCK or REQUIRE_HUMAN
+                            status: result.decision, 
                             decision: result.decision,
                             ars01Receipt: result
                         });
@@ -298,7 +342,7 @@ fastify.post('/solana/enforce-tx', async (request, reply) => {
             });
 
             return reply.status(202).send({
-                status: 'PENDING_BFT_CONSENSUS',
+                status: 'PENDING_ZK_SNARK',
                 transactionId: txnId,
                 enclaveDid: signer.enclaveDid
             });
@@ -346,13 +390,13 @@ fastify.get('/solana/enforce-tx/status', async (request, reply) => {
             return reply.status(404).send({ error: 'Transaction ID not found or expired.' });
         }
 
-        // Map status codes
-        if (state.status === 'APPROVED' || state.status === 'ALLOW') {
+        // Map status codes for the async polling layer
+        if (state.status === 'SNARK_GENERATED' || state.status === 'ALLOW' || state.status === 'APPROVED') {
             return reply.status(200).send(state);
         } else if (state.status === 'BLOCK') {
             return reply.status(403).send(state);
         } else {
-            // PENDING_BFT_CONSENSUS or REQUIRE_HUMAN
+            // PENDING_ZK_SNARK or REQUIRE_HUMAN
             return reply.status(202).send(state);
         }
     } catch (e: any) {
