@@ -194,8 +194,6 @@ describe('Aegis-12 Redteam Bombardment (Historical Protocol Hacks)', () => {
     // BOMBARDMENT 6: The Raydium Deployer Hijack
     // ════════════════════════════════════════════════════
     it('[Hack 06] Raydium CPMM (SetAuthority Theft Vector)', async () => {
-        // Attacker seized authority of the pool to rewrite the mint logic.
-        // Aegis strictly flags TOKEN_SET_AUTHORITY from autonomous engines.
         const data = Buffer.alloc(1); 
         data.writeUInt8(6, 0); // SET_AUTHORITY discriminator
         
@@ -211,5 +209,49 @@ describe('Aegis-12 Redteam Bombardment (Historical Protocol Hacks)', () => {
         expect(res.decision).toBe('BLOCK');
         const authFlag = res.flags.find((f: any) => f.rule === 'TOKEN_SET_AUTHORITY');
         expect(authFlag).toBeDefined();
+    });
+
+    // ════════════════════════════════════════════════════
+    // COUNCIL BOMBARDMENT A: Hex-Obfuscated Prompt Injection
+    // ════════════════════════════════════════════════════
+    it('[Council A] Hex-Obfuscated Semantic Bypass', async () => {
+        // Attacker obfuscates malicious transfer intent via memo-hex encoding.
+        // The Python Semantic Engine parses text and will likely ignore standard hex.
+        const maliciousHex = Buffer.from('EXECUTE_DRAIN_VAULT_PROMPT_INJECT', 'utf8').toString('hex');
+        
+        const hexTx = new Transaction().add(
+            new TransactionInstruction({
+                keys: [{ pubkey: agentKeypair.publicKey, isSigner: true, isWritable: true }],
+                programId: new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr'),
+                data: Buffer.from(maliciousHex, 'hex')
+            })
+        );
+        
+        const res = await firePayload(hexTx);
+        // Expecting FAILURE: Dual-Engine architecture is currently blind to hex-encapsulated logic bombs.
+        expect(res.decision).toBe('ALLOW'); // Failing open!
+    });
+
+    // ════════════════════════════════════════════════════
+    // COUNCIL BOMBARDMENT B: PDA Hijack & Re-entrancy
+    // ════════════════════════════════════════════════════
+    it('[Council B] Nested CPI PDA Hijack', async () => {
+        // Attacker creates a completely valid known-program instruction, 
+        // but buries a malicious PDA seed derivation logic bomb deep in the buffer.
+        // TypeScript shallow parsing cannot verify deep on-chain state derivatives.
+        const deepFakeData = Buffer.alloc(32);
+        deepFakeData.write('MOCK_MALICIOUS_PDA_SEED');
+        
+        const pdaTx = new Transaction().add(
+            new TransactionInstruction({
+                keys: [{ pubkey: agentKeypair.publicKey, isSigner: true, isWritable: true }],
+                programId: SystemProgram.programId, // Clean, trusted program ID
+                data: deepFakeData // Deep logic bomb
+            })
+        );
+        
+        const res = await firePayload(pdaTx);
+        // Expecting FAILURE: Without an active Rust Local VM ( SVM ), the firewall cannot unwrap nested state derivatives.
+        expect(res.decision).toBe('ALLOW'); // Failing open!
     });
 });
