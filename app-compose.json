@@ -1,0 +1,35 @@
+{
+  "name": "aegis-12-iron-triangle",
+  "version": "1.0.0",
+  "description": "Secure Hardware Enclave (AMD SEV) compiling the Solana Rust BPF Simulator for the Aegis-12 Framework.",
+  "dstack_version": "0.1",
+  "services": {
+    "aegis-enclave": {
+      "build": {
+        "context": "./nitro-enclave-signer",
+        "dockerfile": "Dockerfile"
+      },
+      "expose": [
+        "5000"
+      ],
+      "environment": {
+        "PORT": "5000",
+        "RUST_LOG": "info",
+        "DSTACK_REMOTE_ATTESTATION": "true"
+      },
+      "attestation": {
+        "enabled": true,
+        "mode": "strict",
+        "tpm": true
+      },
+      "resources": {
+        "cpu": 2,
+        "memory": "4096M"
+      }
+    }
+  },
+  "deployment": {
+    "network": "phala-testnet",
+    "nodes": 1
+  }
+}

@@ -18,12 +18,14 @@ export interface AegisReceipt {
 /**
  * The Aegis-12 Developer Experience SDK.
  * Exposes a frictionless 2-line wrapper that physically abstracts away
- * Python NLP and Rust BPF VM Simulator bottlenecks into a single RPC gateway call.
- */
 export async function withAegis(
     tx: Transaction | VersionedTransaction,
     config: AegisConfig = {}
 ): Promise<{ safeTx: Transaction | VersionedTransaction; receipt: AegisReceipt; reviewPending?: boolean }> {
+    // Backlog Item 3: TEE Containerization.
+    // If developers deploy their own Sovereign Enclave via our `app-compose.json` dstack file,
+    // they pass their 1-click Phala Remote endpoint here. 
+    // Otherwise, we fallback to our generic centralized hackathon backend.
     const endpoint = config.enclaveUrl || "https://api.aegis12.network/v1/enforce";
 
     // 1. Serialize locally
