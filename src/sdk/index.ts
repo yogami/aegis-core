@@ -10,6 +10,7 @@ export interface AegisConfig {
     pcr0Whitelist?: string[]; // Backlog Item 4: Forces payload rejection if enclave hash isn't registered by multi-sig
     fallbackUrls?: string[]; // Backlog Item 6: Node routing redundancy path
     timeoutMs?: number; // Backlog Item 6: Automatic Circuit-Breaker abort threshold
+    expectedZkVkey?: string; // Backlog Item 7: Mathematical verification key pinning to prevent ZK "Don't Care" bit downgrades
 }
 
 export interface AegisReceipt {
@@ -98,6 +99,14 @@ export async function withAegis(
             const hardwareMeasurement = data.pcr0 || "unverified_rogue_hash";
             if (!config.pcr0Whitelist.includes(hardwareMeasurement)) {
                 throw new Error(`[Aegis-12 Override]: UNREGISTERED_MEASUREMENT. The executing TEE hardware measurement [${hardwareMeasurement}] is not mapped to the secure on-chain Squads V4 whitelist. Supply-Chain intercept initiated.`);
+            }
+        }
+
+        // Backlog Item 7: ZK Circuit Parity Check (Circuit Downgrade Attack Prevention)
+        if (config.expectedZkVkey) {
+            const remoteVkey = data.zk_vkey || "legacy_vulnerable_vkey";
+            if (remoteVkey !== config.expectedZkVkey) {
+                throw new Error(`[Aegis-12 Override]: VULNERABLE_ZK_CIRCUIT. The remote ZK Coprocessor returned an attestation validated by an unauthorized or deprecated circuit hash: [${remoteVkey}]. Expected: [${config.expectedZkVkey}]. Execution halted.`);
             }
         }
 
