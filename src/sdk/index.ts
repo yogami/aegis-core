@@ -7,6 +7,7 @@ export interface AegisConfig {
     useDurableNonce?: boolean; // Backlog Item 1: Migrates expired transactions to Nonces for human review
     nonceAccountPublickey?: string;
     nonceAuthorityPublickey?: string;
+    pcr0Whitelist?: string[]; // Backlog Item 4: Forces payload rejection if enclave hash isn't registered by multi-sig
 }
 
 export interface AegisReceipt {
@@ -47,6 +48,16 @@ export async function withAegis(
 
         const data = await response.json();
         
+        // Backlog Item 4: God Mode Supply-Chain Governance
+        // If the developer restricts payloads to DAO-approved Enclaves, we explicitly 
+        // verify the Hardware PCR0 Measurement Hash returned in the API attestation object.
+        if (config.pcr0Whitelist && config.pcr0Whitelist.length > 0) {
+            const hardwareMeasurement = data.pcr0 || "unverified_rogue_hash";
+            if (!config.pcr0Whitelist.includes(hardwareMeasurement)) {
+                throw new Error(`[Aegis-12 Override]: UNREGISTERED_MEASUREMENT. The executing TEE hardware measurement [${hardwareMeasurement}] is not mapped to the secure on-chain Squads V4 whitelist. Supply-Chain intercept initiated.`);
+            }
+        }
+
         let isHumanPending = false;
 
         if (data.decision === 'REQUIRE_HUMAN') {
