@@ -64,9 +64,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
     let port: u16 = std::env::var("PORT").unwrap_or_else(|_| "5000".to_string()).parse()?;
 
-    // Generate an in-memory keypair for the enclave boundary
+    // --- PHASE 3 SOVEREIGN SHIFT: VOLATILE ROOT-OF-TRUST ---
+    // The Council identified AWS IAM (KMS) as a "God Mode" backdoor. 
+    // To solve this, the Iron Triangle enclave generates its ECDSA signing key strictly 
+    // in isolated volatile memory using the CPU's RNG during boot.
+    // IT IS NEVER EXPORTED, AND NEVER TOUCHES DISK OR KMS. 
+    // If the enclave dies, the key dies. 
     let mut csprng = OsRng;
     let signing_key = SigningKey::generate(&mut csprng);
+    tracing::info!("Volatile ZK-Signer Key generated. Public Identity: [{:?}]. Warning: Key will be destroyed upon enclave termination.", signing_key.verifying_key());
     
     // Load the cryptographic execution baseline manifest
     let manifest_path = "manifest.json";
