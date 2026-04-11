@@ -1,9 +1,12 @@
-import { Transaction, VersionedTransaction, Connection, TransactionInstruction, PublicKey } from '@solana/web3.js';
+import { Transaction, VersionedTransaction, Connection, TransactionInstruction, PublicKey, SystemProgram } from '@solana/web3.js';
 
 export interface AegisConfig {
     enclaveUrl?: string; // Optional: Override for Enterprise self-hosting
     apiKey?: string;
     strictMode?: boolean; // If true, kills transaction on semantic drift (default). If false, tags and lets it through.
+    useDurableNonce?: boolean; // Backlog Item 1: Migrates expired transactions to Nonces for human review
+    nonceAccountPublickey?: string;
+    nonceAuthorityPublickey?: string;
 }
 
 export interface AegisReceipt {
@@ -20,7 +23,7 @@ export interface AegisReceipt {
 export async function withAegis(
     tx: Transaction | VersionedTransaction,
     config: AegisConfig = {}
-): Promise<{ safeTx: Transaction | VersionedTransaction; receipt: AegisReceipt }> {
+): Promise<{ safeTx: Transaction | VersionedTransaction; receipt: AegisReceipt; reviewPending?: boolean }> {
     const endpoint = config.enclaveUrl || "https://api.aegis12.network/v1/enforce";
 
     // 1. Serialize locally
@@ -41,8 +44,15 @@ export async function withAegis(
         });
 
         const data = await response.json();
+        
+        let isHumanPending = false;
 
-        if (data.decision === 'BLOCK' || data.decision === 'REQUIRE_HUMAN') {
+        if (data.decision === 'REQUIRE_HUMAN') {
+            if (!config.useDurableNonce || !config.nonceAccountPublickey || !config.nonceAuthorityPublickey) {
+                throw new Error(`[Aegis-12 HOTL]: Transaction flagged for human review, but Durable Nonces are not configured. Transaction will expire.`);
+            }
+            isHumanPending = true;
+        } else if (data.decision === 'BLOCK') {
             throw new Error(`[Aegis-12 Override]: Transaction halted. Reason: ${data.flags?.[0]?.rule || 'Semantic/Structural Anomaly'}`);
         }
 
@@ -52,7 +62,20 @@ export async function withAegis(
         
         let anchoredTx = tx;
         if (tx instanceof Transaction) {
-            anchoredTx = new Transaction().add(...tx.instructions);
+            anchoredTx = new Transaction();
+            
+            // Backlog Item 1: HOTL Temporal Decay Prevention
+            if (config.useDurableNonce && config.nonceAccountPublickey && config.nonceAuthorityPublickey) {
+                anchoredTx.add(
+                    SystemProgram.nonceAdvance({
+                        noncePubkey: new PublicKey(config.nonceAccountPublickey),
+                        authorizedPubkey: new PublicKey(config.nonceAuthorityPublickey),
+                    })
+                );
+            }
+
+            // Append original instructions
+            anchoredTx.add(...tx.instructions);
             anchoredTx.recentBlockhash = tx.recentBlockhash;
             anchoredTx.feePayer = tx.feePayer;
             
@@ -67,6 +90,7 @@ export async function withAegis(
 
         return {
             safeTx: anchoredTx,
+            reviewPending: isHumanPending,
             receipt: {
                 certified: true,
                 arsToken: receiptToken,
@@ -81,6 +105,7 @@ export async function withAegis(
         // Fail-open for non-strict mode
         return {
             safeTx: tx,
+            reviewPending: false,
             receipt: { certified: false, arsToken: "", reasoning: e.message }
         };
     }
