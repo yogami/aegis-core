@@ -8,6 +8,8 @@ export interface AegisConfig {
     nonceAccountPublickey?: string;
     nonceAuthorityPublickey?: string;
     pcr0Whitelist?: string[]; // Backlog Item 4: Forces payload rejection if enclave hash isn't registered by multi-sig
+    fallbackUrls?: string[]; // Backlog Item 6: Node routing redundancy path
+    timeoutMs?: number; // Backlog Item 6: Automatic Circuit-Breaker abort threshold
 }
 
 export interface AegisReceipt {
@@ -16,6 +18,7 @@ export interface AegisReceipt {
     reasoning: string;
     simulatedSlot?: number; // Backlog Item 5: The exact Solana slot the Enclave simulated against
     simulatedBlockhash?: string; // Backlog Item 5: The exact blockhash the Enclave simulated against
+    clusterFallbackTriggered?: boolean; // Backlog Item 6: Identifies if primary TEE failed
 }
 
 /**
@@ -29,26 +32,64 @@ export async function withAegis(
     // If developers deploy their own Sovereign Enclave via our `app-compose.json` dstack file,
     // they pass their 1-click Phala Remote endpoint here. 
     // Otherwise, we fallback to our generic centralized hackathon backend.
-    const endpoint = config.enclaveUrl || "https://api.aegis12.network/v1/enforce";
+    const endpoints = [config.enclaveUrl || "https://api.aegis12.network/v1/enforce", ...(config.fallbackUrls || [])];
+    const timeoutLimit = config.timeoutMs || 800; // Aggressive sub-second circuit-breaker
 
     // 1. Serialize locally
     const serializedTx = Buffer.from(tx.serialize()).toString('base64');
     
-    try {
-        // 2. Fire intent to the remote Iron Triangle
-        const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${config.apiKey || 'anonymous'}`
-            },
-            body: JSON.stringify({
-                serializedTx,
-                enforceStrictMode: config.strictMode ?? true
-            })
-        });
+    let lastError: any;
+    let successfulData: any = null;
+    let fallbackHit = false;
 
-        const data = await response.json();
+    // Backlog Item 6: Enclave Circuit-Breaker Loop
+    for (let i = 0; i < endpoints.length; i++) {
+        const currentEndpoint = endpoints[i];
+        if (i > 0) fallbackHit = true;
+
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), timeoutLimit);
+
+            // 2. Fire intent to the remote Iron Triangle
+            const response = await fetch(currentEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${config.apiKey || 'anonymous'}`
+                },
+                body: JSON.stringify({
+                    serializedTx,
+                    enforceStrictMode: config.strictMode ?? true
+                }),
+                signal: controller.signal
+            });
+
+            clearTimeout(timeoutId);
+            successfulData = await response.json();
+            break; // Valid response retrieved! Escape the failover loop.
+
+        } catch (e: any) {
+            lastError = e;
+            // Native Abort execution implies Remote Enclave Kernel Panic/Livelock. 
+            // Cascade to next endpoint securely.
+            continue; 
+        }
+    }
+
+    if (!successfulData) {
+        if (config.strictMode !== false) {
+             throw new Error(`[Aegis-12 Livelock]: All hardware nodes crashed/timed-out. Execution severed. Last Exception: ${lastError?.message}`);
+        }
+        return {
+            safeTx: tx,
+            reviewPending: false,
+            receipt: { certified: false, arsToken: "", reasoning: `Cluster Blackhole. Failover error: ${lastError?.message}`, clusterFallbackTriggered: true }
+        };
+    }
+    
+    try {
+        const data = successfulData;
         
         // Backlog Item 4: God Mode Supply-Chain Governance
         // If the developer restricts payloads to DAO-approved Enclaves, we explicitly 
@@ -111,7 +152,8 @@ export async function withAegis(
                 arsToken: receiptToken,
                 reasoning: data.reasoning || "Cleared Iron Triangle Structural Checks",
                 simulatedSlot: data.simulatedSlot || 250000000,
-                simulatedBlockhash: data.simulatedBlockhash || tx.recentBlockhash || "unknown_blockhash"
+                simulatedBlockhash: data.simulatedBlockhash || tx.recentBlockhash || "unknown_blockhash",
+                clusterFallbackTriggered: fallbackHit
             }
         };
 
